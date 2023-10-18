@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option go_package = "color.faas/pkg/proto/executor";
+package executor;
+
+
+service executor {
+  rpc Heartbeat (HeartbeatRequest) returns (HeartbeatReply) {}
+
+  // init the running env of a task.
+  rpc InitTask (InitTaskRequest) returns (InitTaskReply) {}
+
+  rpc RunTask (RunTaskRequest) returns (RunTaskReply) {}
+
+  rpc KillTask (KillTaskRequest) returns (KillTaskReply) {}
+
+}
+
+message HeartbeatRequest {
+  string msg = 1;
+}
+
+message HeartbeatReply {
+  int64 status = 1;
+  string msg = 2;
+}
+
+message InitTaskRequest {
+  string taskID = 1;
+  string funcName = 2;
+  string taskFuncPath = 3;
+
+  int64 taskCPUCore = 4;
+  int64 taskMem = 5;
+  int64 taskDiskSpace = 6;
+}
+
+message InitTaskReply {
+  int64 status = 1;
+  string msg = 2;
+}
+
+message RunTaskRequest {
+  string taskID = 1;
+  string funcName = 2;
+}
+
+message RunTaskReply {
+  int64 status = 1;
+  string msg = 2;
+}
+
+message KillTaskRequest {
+  string taskID = 1;
+  string funcName = 2;
+}
+
+message KillTaskReply{
+  int64 status = 1;
+  string msg = 2;
+}

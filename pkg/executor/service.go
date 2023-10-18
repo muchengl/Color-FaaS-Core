@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 
+	mgr "Color-FaaS-Core/pkg/executor/fmanager"
 	pb "Color-FaaS-Core/pkg/proto/executor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -19,6 +20,12 @@ var (
 
 type Executor struct {
 	pb.UnimplementedExecutorServer
+
+	funcFilePath string // path for function file cache
+	funcRunDir   string // path for function runs in container
+
+	fmanager mgr.FuncManager
+	cfg      config
 }
 
 func New() (Executor, error) {
@@ -41,13 +48,15 @@ func (exe *Executor) Start() {
 }
 
 func (e *Executor) Heartbeat(ctx context.Context, req *pb.HeartbeatRequest) (*pb.HeartbeatReply, error) {
+	log.Default().Print("heartbeat access")
 	reply := pb.HeartbeatReply{}
 	reply.Status = 1
 	reply.Msg = "alive"
 	return &reply, nil
 }
 
-func (e *Executor) InitTask(ctx context.Context, reqc *pb.InitTaskRequest) (*pb.InitTaskReply, error) {
+func (e *Executor) InitTask(ctx context.Context, req *pb.InitTaskRequest) (*pb.InitTaskReply, error) {
+	log.Default().Print("InitTask access")
 
 	return nil, status.Errorf(codes.Unimplemented, "method InitTask not implemented")
 }

@@ -13,7 +13,6 @@ service executor {
   rpc RunTask (RunTaskRequest) returns (RunTaskReply) {}
 
   rpc KillTask (KillTaskRequest) returns (KillTaskReply) {}
-
 }
 
 message HeartbeatRequest {
@@ -28,11 +27,13 @@ message HeartbeatReply {
 message InitTaskRequest {
   string taskID = 1;
   string funcName = 2;
-  string taskFuncPath = 3;
+  string funcID = 8;
+  string funcStorageType = 3; // s3
+  string taskFuncPath = 4;
 
-  int64 taskCPUCore = 4;
-  int64 taskMem = 5;
-  int64 taskDiskSpace = 6;
+  int64 taskCPUCore = 5;
+  int64 taskMem = 6;
+  int64 taskDiskSpace = 7;
 }
 
 message InitTaskReply {

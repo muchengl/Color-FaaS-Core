@@ -21,9 +21,6 @@ var (
 type Executor struct {
 	pb.UnimplementedExecutorServer
 
-	funcFilePath string // path for function file cache
-	funcRunDir   string // path for function runs in container
-
 	fmanager mgr.FuncManager
 	cfg      config
 }

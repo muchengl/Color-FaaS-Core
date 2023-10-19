@@ -1,0 +1,86 @@
+version: '3'
+services:
+  # Mysql
+  mysql:
+    restart: always
+    #restart: unless-stopped
+    image: mysql
+    container_name: mysql_dbs
+    #container_name: mysql
+    privileged: true
+    volumes:
+      - ./mysql/mydir:/mydir
+      - ./mysql/datadir:/var/lib/mysql
+      - ./mysql/conf/my.cnf:/etc/my.cnf
+      # DB recover dir
+      - ./mysql/source:/docker-entrypoint-initdb.d
+
+  
+    environment:
+      - "MYSQL_ROOT_PASSWORD=123456"
+      - "MYSQL_DATABASE=admin"
+      - "TZ=Asia/Shanghai"
+    ports:
+      - 3306:3306
+    
+  # ZooKeeper
+  zookeeper:
+    image: zookeeper
+    restart: always
+    container_name: zookeeper
+    volumes:
+      - ./zookeeper/config:/conf
+      - ./zookeeper/data:/data
+      - ./zookeeper/logs:/datalog
+    ports: 
+      - "5018:2181"
+
+
+  # HDFS
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - ./hdfs/hadoop/dfs/name:/hadoop/dfs/name
+      - ./hdfs/hadoop/input:/input
+      # - ./hdfs/hadoop/conf/hadoop/:/etc/hadoop/
+    environment:
+      - CLUSTER_NAME=color_faas
+    env_file:
+      - ./hdfs/hadoop.env
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    ports:
+      - 9866:9866
+    depends_on:
+      - namenode
+    volumes:
+      - ./hdfs/hadoop/dfs/data:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hdfs/hadoop.env
+  
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
+    env_file:
+      - ./hdfs/hadoop.env
+
+  nodemanager1:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+    env_file:
+      - ./hdfs/hadoop.env
+  
+
+

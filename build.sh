@@ -8,8 +8,9 @@ echo "  ---> init dir <---"
 mkdir output
 mkdir output/conf
 
-echo "  ---> init conf <---"
+echo "  ---> init files <---"
 cp -r conf output/
+cp static/startup.sh output/
 
 echo "  ---> make server <---"
 go build -o output/server/server cmd/server/main.go

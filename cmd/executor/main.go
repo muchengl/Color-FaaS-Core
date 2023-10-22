@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	exe, err := executor.New()
+	exe, err := executor.New(model.DefaultInfo)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 		return
@@ -16,6 +16,12 @@ func main() {
 
 	exe.RuntimeInfo = model.DefaultInfo
 	err = exe.RuntimeInfo.InitByArgs(os.Args)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+		return
+	}
+
+	err = exe.InitRunningEnv()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 		return

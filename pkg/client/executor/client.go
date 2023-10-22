@@ -8,14 +8,14 @@ import (
 	"log"
 )
 
-type executorClient struct {
+type Client struct {
 	executorIP   string
 	executorPort string
 	client       pb.ExecutorClient
 }
 
-func New(ip string, port string) (executorClient, error) {
-	exe := executorClient{}
+func New(ip string, port string) (Client, error) {
+	exe := Client{}
 	exe.executorIP = ip
 	exe.executorPort = port
 
@@ -29,11 +29,18 @@ func New(ip string, port string) (executorClient, error) {
 	return exe, nil
 }
 
-func (e *executorClient) Heartbeat() (*pb.HeartbeatReply, error) {
+func (e *Client) Heartbeat() (*pb.HeartbeatReply, error) {
 	req := pb.HeartbeatRequest{
 		Msg: "test",
 	}
 	reply, _ := e.client.Heartbeat(context.Background(), &req)
+	log.Default().Printf("reply %s", reply)
+
+	return reply, nil
+}
+
+func (e *Client) InitTask(instance *pb.TaskInstance) (*pb.InitTaskReply, error) {
+	reply, _ := e.client.InitTask(context.Background(), instance)
 	log.Default().Printf("reply %s", reply)
 
 	return reply, nil

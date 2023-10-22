@@ -1,3 +1,4 @@
 config:
-  funcFilePath : "./funcs"
-  funcRunDir : "./run"
+  Port : "50001"
+  FuncFilePath : "./funcs"
+  FuncRunDir : "./run"

@@ -1,6 +1,6 @@
 package utils
 
-type Manager struct {
+type S3Manager struct {
 	accessKey string
 	secretKey string
 }

@@ -71,7 +71,6 @@ func NewHdfsManager(info model.RuntimeInfo) (*HdfsManager, error) {
 func (h *HdfsManager) DownloadFile(hdfsPath string, localPath string) error {
 	file, err := h.client.Open(hdfsPath)
 	if err != nil {
-
 		log.Printf("Failed to open file from HDFS: %s\n", err)
 		return err
 	}
@@ -83,7 +82,7 @@ func (h *HdfsManager) DownloadFile(hdfsPath string, localPath string) error {
 		return err
 	}
 
-	err = os.WriteFile(localPath, data, 0644)
+	err = os.WriteFile(localPath, data, 0777)
 	if err != nil {
 		log.Printf("Failed to write to local file: %s\n", err)
 		return err

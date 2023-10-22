@@ -85,7 +85,7 @@ func (r *RuntimeInfo) InitByArgs(args []string) error {
 }
 
 var DefaultInfo = RuntimeInfo{
-	IsDebug:  true,
+	IsDebug:  false,
 	OS:       MACOS,
 	Platform: ARM64,
 	CfgType:  Local,

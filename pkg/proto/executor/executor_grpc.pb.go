@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ExecutorClient interface {
 	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatReply, error)
 	// init the running env of a task.
-	InitTask(ctx context.Context, in *InitTaskRequest, opts ...grpc.CallOption) (*InitTaskReply, error)
+	InitTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*InitTaskReply, error)
 	RunTask(ctx context.Context, in *RunTaskRequest, opts ...grpc.CallOption) (*RunTaskReply, error)
 	KillTask(ctx context.Context, in *KillTaskRequest, opts ...grpc.CallOption) (*KillTaskReply, error)
 }
@@ -46,7 +46,7 @@ func (c *executorClient) Heartbeat(ctx context.Context, in *HeartbeatRequest, op
 	return out, nil
 }
 
-func (c *executorClient) InitTask(ctx context.Context, in *InitTaskRequest, opts ...grpc.CallOption) (*InitTaskReply, error) {
+func (c *executorClient) InitTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*InitTaskReply, error) {
 	out := new(InitTaskReply)
 	err := c.cc.Invoke(ctx, "/executor.executor/InitTask", in, out, opts...)
 	if err != nil {
@@ -79,7 +79,7 @@ func (c *executorClient) KillTask(ctx context.Context, in *KillTaskRequest, opts
 type ExecutorServer interface {
 	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatReply, error)
 	// init the running env of a task.
-	InitTask(context.Context, *InitTaskRequest) (*InitTaskReply, error)
+	InitTask(context.Context, *TaskInstance) (*InitTaskReply, error)
 	RunTask(context.Context, *RunTaskRequest) (*RunTaskReply, error)
 	KillTask(context.Context, *KillTaskRequest) (*KillTaskReply, error)
 	mustEmbedUnimplementedExecutorServer()
@@ -92,7 +92,7 @@ type UnimplementedExecutorServer struct {
 func (UnimplementedExecutorServer) Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Heartbeat not implemented")
 }
-func (UnimplementedExecutorServer) InitTask(context.Context, *InitTaskRequest) (*InitTaskReply, error) {
+func (UnimplementedExecutorServer) InitTask(context.Context, *TaskInstance) (*InitTaskReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitTask not implemented")
 }
 func (UnimplementedExecutorServer) RunTask(context.Context, *RunTaskRequest) (*RunTaskReply, error) {
@@ -133,7 +133,7 @@ func _Executor_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Executor_InitTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InitTaskRequest)
+	in := new(TaskInstance)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func _Executor_InitTask_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/executor.executor/InitTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExecutorServer).InitTask(ctx, req.(*InitTaskRequest))
+		return srv.(ExecutorServer).InitTask(ctx, req.(*TaskInstance))
 	}
 	return interceptor(ctx, in, info, handler)
 }

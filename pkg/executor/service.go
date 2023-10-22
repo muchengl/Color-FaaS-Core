@@ -8,6 +8,7 @@ import (
 	"net"
 
 	mgr "Color-FaaS-Core/pkg/executor/fmanager"
+	model "Color-FaaS-Core/pkg/model"
 	pb "Color-FaaS-Core/pkg/proto/executor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -21,8 +22,9 @@ var (
 type Executor struct {
 	pb.UnimplementedExecutorServer
 
-	fmanager mgr.FuncManager
-	cfg      config
+	RuntimeInfo model.RuntimeInfo
+	fmanager    mgr.FuncManager
+	cfg         config
 }
 
 func New() (Executor, error) {

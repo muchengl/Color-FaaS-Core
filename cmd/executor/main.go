@@ -21,10 +21,6 @@ func main() {
 		return
 	}
 
-	if err != nil {
-		log.Fatalf("ERROR %v", err)
-	}
-
 	log.Default().Printf("Start Executor RPC server...")
 	exe.Start()
 }

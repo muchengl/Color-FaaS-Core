@@ -1,4 +1,4 @@
-package executor
+package configs
 
 import (
 	"log"
@@ -11,25 +11,25 @@ import (
 const cfgPathDebug = "../../conf/executor_conf.yaml"
 const cfgPathDev = "../conf/executor_conf.yaml"
 
-type ExecutorConfig struct {
+type EConfig struct {
 	Port         string `yaml:"Port"`
 	FuncFilePath string `yaml:"FuncFilePath"`
 	FuncRunDir   string `yaml:"FuncRunDir"`
 }
 
-type config struct {
-	Cfg ExecutorConfig `yaml:"ExecutorConfig"`
+type ExecutorConfig struct {
+	Cfg EConfig `yaml:"ExecutorConfig"`
 }
 
-var defaultConfig = config{
-	Cfg: ExecutorConfig{
+var defaultExecutorConfig = ExecutorConfig{
+	Cfg: EConfig{
 		Port:         "50001",
 		FuncFilePath: "./funcs",
 		FuncRunDir:   "./run",
 	},
 }
 
-func newConfig(runtimeInfo model.RuntimeInfo) config {
+func NewConfig(runtimeInfo model.RuntimeInfo) ExecutorConfig {
 	path := cfgPathDebug
 	if !runtimeInfo.IsDebug {
 		path = cfgPathDev
@@ -38,14 +38,14 @@ func newConfig(runtimeInfo model.RuntimeInfo) config {
 	cfgByte, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatalf("error: %v", err)
-		return defaultConfig
+		return defaultExecutorConfig
 	}
 
-	var cfg config
+	var cfg ExecutorConfig
 	err = yaml.Unmarshal(cfgByte, &cfg)
 	if err != nil {
 		log.Fatalf("error: %v", err)
-		return defaultConfig
+		return defaultExecutorConfig
 	}
 	log.Printf("config for executor :%v", cfg)
 	return cfg

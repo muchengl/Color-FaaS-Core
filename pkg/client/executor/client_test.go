@@ -26,7 +26,11 @@ func TestExecutorClient_InitTask(t *testing.T) {
 		TaskFuncPath:    "/color-faas/helloworld_raw",
 	}
 
-	reply, _ := exe.InitTask(&req)
-	reqByte, _ := json.Marshal(reply)
+	replyInit, _ := exe.InitTask(&req)
+	reqByte, _ := json.Marshal(replyInit)
+	println(string(reqByte))
+
+	replyRun, _ := exe.RunTask(&req)
+	reqByte, _ = json.Marshal(replyRun)
 	println(string(reqByte))
 }

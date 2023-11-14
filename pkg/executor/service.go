@@ -1,15 +1,13 @@
 package executor
 
 import (
-	"Color-FaaS-Core/pkg/common"
+	"Color-FaaS-Core/pkg/configs"
 	fmgr "Color-FaaS-Core/pkg/executor/funcmanager"
 	model "Color-FaaS-Core/pkg/model"
 	pb "Color-FaaS-Core/pkg/proto/executor"
 	"context"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"log"
 	"net"
 	"os"
@@ -21,13 +19,13 @@ type Executor struct {
 	executorID  string
 	RuntimeInfo model.RuntimeInfo
 	funcManager fmgr.Service
-	cfg         config
+	cfg         configs.ExecutorConfig
 }
 
 func New(info model.RuntimeInfo) (*Executor, error) {
 	executor := Executor{}
 	executor.RuntimeInfo = info
-	executor.cfg = newConfig(info)
+	executor.cfg = configs.NewConfig(info)
 	executor.executorID = uuid.New().String()
 
 	mgr, err := fmgr.New(info)
@@ -79,14 +77,9 @@ func (e *Executor) InitTask(ctx context.Context, req *pb.TaskInstance) (*pb.Init
 
 	reply := pb.InitTaskReply{}
 
-	funcInstance := fmgr.FunctionInstance{
-		FuncName:    req.FuncName,
-		FuncID:      req.FuncID,
-		StorageType: req.FuncStorageType,
-		RemotePath:  req.TaskFuncPath,
-		LocalPath:   e.cfg.Cfg.FuncFilePath + "/" + uuid.NewString(),
-		Status:      common.NotInit,
-	}
+	funcInstance := fmgr.FunctionInstance{}
+	funcInstance.Init(req, e.cfg)
+
 	err := e.funcManager.Init(funcInstance)
 	if err != nil {
 		log.Printf("init func fail, %v", funcInstance)
@@ -95,7 +88,18 @@ func (e *Executor) InitTask(ctx context.Context, req *pb.TaskInstance) (*pb.Init
 		return &reply, nil
 	}
 
-	err = e.funcManager.Start()
+	reply.Msg = "init success"
+	reply.Status = 1
+	return &reply, nil
+}
+
+func (e *Executor) RunTask(ctx context.Context, req *pb.TaskInstance) (*pb.RunTaskReply, error) {
+	reply := pb.RunTaskReply{}
+
+	funcInstance := fmgr.FunctionInstance{}
+	funcInstance.Init(req, e.cfg)
+
+	err := e.funcManager.Start(funcInstance)
 	if err != nil {
 		log.Printf("start func fail, %v", funcInstance)
 		reply.Status = -1
@@ -103,19 +107,18 @@ func (e *Executor) InitTask(ctx context.Context, req *pb.TaskInstance) (*pb.Init
 		return &reply, nil
 	}
 
-	reply.Msg = "success"
+	reply.Msg = "run success"
 	reply.Status = 1
 	return &reply, nil
 }
 
-func (e *Executor) RunTask(ctx context.Context, req *pb.RunTaskRequest) (*pb.RunTaskReply, error) {
-
-	return nil, status.Errorf(codes.Unimplemented, "method RunTask not implemented")
-}
-
-func (e *Executor) KillTask(ctx context.Context, req *pb.KillTaskRequest) (*pb.KillTaskReply, error) {
+func (e *Executor) KillTask(ctx context.Context, req *pb.TaskInstance) (*pb.KillTaskReply, error) {
 	reply := pb.KillTaskReply{}
-	err := e.funcManager.Kill()
+
+	instance := fmgr.FunctionInstance{}
+	instance.Init(req, e.cfg)
+
+	err := e.funcManager.Kill(instance)
 	if err != nil {
 		reply.Status = -1
 		reply.Msg = "kill func fail"

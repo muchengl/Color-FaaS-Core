@@ -25,8 +25,8 @@ type ExecutorClient interface {
 	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatReply, error)
 	// init the running env of a task.
 	InitTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*InitTaskReply, error)
-	RunTask(ctx context.Context, in *RunTaskRequest, opts ...grpc.CallOption) (*RunTaskReply, error)
-	KillTask(ctx context.Context, in *KillTaskRequest, opts ...grpc.CallOption) (*KillTaskReply, error)
+	RunTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*RunTaskReply, error)
+	KillTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*KillTaskReply, error)
 }
 
 type executorClient struct {
@@ -55,7 +55,7 @@ func (c *executorClient) InitTask(ctx context.Context, in *TaskInstance, opts ..
 	return out, nil
 }
 
-func (c *executorClient) RunTask(ctx context.Context, in *RunTaskRequest, opts ...grpc.CallOption) (*RunTaskReply, error) {
+func (c *executorClient) RunTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*RunTaskReply, error) {
 	out := new(RunTaskReply)
 	err := c.cc.Invoke(ctx, "/executor.executor/RunTask", in, out, opts...)
 	if err != nil {
@@ -64,7 +64,7 @@ func (c *executorClient) RunTask(ctx context.Context, in *RunTaskRequest, opts .
 	return out, nil
 }
 
-func (c *executorClient) KillTask(ctx context.Context, in *KillTaskRequest, opts ...grpc.CallOption) (*KillTaskReply, error) {
+func (c *executorClient) KillTask(ctx context.Context, in *TaskInstance, opts ...grpc.CallOption) (*KillTaskReply, error) {
 	out := new(KillTaskReply)
 	err := c.cc.Invoke(ctx, "/executor.executor/KillTask", in, out, opts...)
 	if err != nil {
@@ -80,8 +80,8 @@ type ExecutorServer interface {
 	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatReply, error)
 	// init the running env of a task.
 	InitTask(context.Context, *TaskInstance) (*InitTaskReply, error)
-	RunTask(context.Context, *RunTaskRequest) (*RunTaskReply, error)
-	KillTask(context.Context, *KillTaskRequest) (*KillTaskReply, error)
+	RunTask(context.Context, *TaskInstance) (*RunTaskReply, error)
+	KillTask(context.Context, *TaskInstance) (*KillTaskReply, error)
 	mustEmbedUnimplementedExecutorServer()
 }
 
@@ -95,10 +95,10 @@ func (UnimplementedExecutorServer) Heartbeat(context.Context, *HeartbeatRequest)
 func (UnimplementedExecutorServer) InitTask(context.Context, *TaskInstance) (*InitTaskReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InitTask not implemented")
 }
-func (UnimplementedExecutorServer) RunTask(context.Context, *RunTaskRequest) (*RunTaskReply, error) {
+func (UnimplementedExecutorServer) RunTask(context.Context, *TaskInstance) (*RunTaskReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RunTask not implemented")
 }
-func (UnimplementedExecutorServer) KillTask(context.Context, *KillTaskRequest) (*KillTaskReply, error) {
+func (UnimplementedExecutorServer) KillTask(context.Context, *TaskInstance) (*KillTaskReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method KillTask not implemented")
 }
 func (UnimplementedExecutorServer) mustEmbedUnimplementedExecutorServer() {}
@@ -151,7 +151,7 @@ func _Executor_InitTask_Handler(srv interface{}, ctx context.Context, dec func(i
 }
 
 func _Executor_RunTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RunTaskRequest)
+	in := new(TaskInstance)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -163,13 +163,13 @@ func _Executor_RunTask_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/executor.executor/RunTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExecutorServer).RunTask(ctx, req.(*RunTaskRequest))
+		return srv.(ExecutorServer).RunTask(ctx, req.(*TaskInstance))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Executor_KillTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(KillTaskRequest)
+	in := new(TaskInstance)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func _Executor_KillTask_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: "/executor.executor/KillTask",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ExecutorServer).KillTask(ctx, req.(*KillTaskRequest))
+		return srv.(ExecutorServer).KillTask(ctx, req.(*TaskInstance))
 	}
 	return interceptor(ctx, in, info, handler)
 }

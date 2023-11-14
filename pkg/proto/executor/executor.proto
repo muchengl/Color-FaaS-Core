@@ -10,9 +10,9 @@ service executor {
   // init the running env of a task.
   rpc InitTask (TaskInstance) returns (InitTaskReply) {}
 
-  rpc RunTask (RunTaskRequest) returns (RunTaskReply) {}
+  rpc RunTask (TaskInstance) returns (RunTaskReply) {}
 
-  rpc KillTask (KillTaskRequest) returns (KillTaskReply) {}
+  rpc KillTask (TaskInstance) returns (KillTaskReply) {}
 }
 
 message HeartbeatRequest {
@@ -31,6 +31,7 @@ message TaskInstance {
   string funcStorageType = 3; // s3
   string taskFuncPath = 4;
   string taskRunningMode = 5; //sync or async
+  string funcType = 11; // Go or python ......
 
   int64 taskCPUCore = 6;
   int64 taskMem = 7;
@@ -43,20 +44,20 @@ message InitTaskReply {
   string msg = 2;
 }
 
-message RunTaskRequest {
-  string taskID = 1;
-  string funcName = 2;
-}
+//message RunTaskRequest {
+//  string taskID = 1;
+//  string funcName = 2;
+//}
 
 message RunTaskReply {
   int64 status = 1;
   string msg = 2;
 }
 
-message KillTaskRequest {
-  string taskID = 1;
-  string funcName = 2;
-}
+//message KillTaskRequest {
+//  string taskID = 1;
+//  string funcName = 2;
+//}
 
 message KillTaskReply{
   int64 status = 1;

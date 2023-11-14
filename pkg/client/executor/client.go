@@ -45,3 +45,17 @@ func (e *Client) InitTask(instance *pb.TaskInstance) (*pb.InitTaskReply, error) 
 
 	return reply, nil
 }
+
+func (e *Client) RunTask(instance *pb.TaskInstance) (*pb.RunTaskReply, error) {
+	reply, _ := e.client.RunTask(context.Background(), instance)
+	log.Default().Printf("reply %s", reply)
+
+	return reply, nil
+}
+
+func (e *Client) KillTask(instance *pb.TaskInstance) (*pb.KillTaskReply, error) {
+	reply, _ := e.client.KillTask(context.Background(), instance)
+	log.Default().Printf("reply %s", reply)
+
+	return reply, nil
+}

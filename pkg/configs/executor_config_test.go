@@ -1,4 +1,4 @@
-package executor
+package configs
 
 import (
 	"Color-FaaS-Core/pkg/model"
@@ -8,7 +8,7 @@ import (
 )
 
 func Test_New(t *testing.T) {
-	cfg := newConfig(model.DefaultInfo)
+	cfg := NewConfig(model.DefaultInfo)
 
 	assert.NotEqual(t, nil, cfg)
 	assert.NotEqual(t, nil, cfg.Cfg.FuncRunDir)

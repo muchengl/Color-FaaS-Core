@@ -17,3 +17,7 @@ test:
 proto:
 	@echo "---> make proto <---"
 	./build_proto.sh
+
+mock:
+	@echo "---> make mock <---"
+	mockgen -source=./pkg/executor/funcmanager/getter.go -destination=./pkg/mock/executor/funcmanager/getter.go -package=mock

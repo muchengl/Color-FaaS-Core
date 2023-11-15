@@ -1,7 +1,9 @@
-package funcmanager
+package manager
 
 import (
 	"Color-FaaS-Core/pkg/common"
+	"Color-FaaS-Core/pkg/configs"
+	"Color-FaaS-Core/pkg/executor/env"
 	"Color-FaaS-Core/pkg/model"
 	"errors"
 	"log"
@@ -11,15 +13,17 @@ type FuncManager struct {
 	funcPool pool
 
 	info   model.RuntimeInfo
-	getter funcGetter
+	cfg    *configs.ExecutorConfig
+	getter env.FuncGetter
 }
 
-func New(info model.RuntimeInfo) (*FuncManager, error) {
+func New(info model.RuntimeInfo, cfg *configs.ExecutorConfig) (*FuncManager, error) {
 	mgr := FuncManager{
 		info: info,
+		cfg:  cfg,
 	}
 
-	getter, err := newGetter(info)
+	getter, err := env.NewGetter(info)
 	if err != nil {
 		log.Printf("init function manager fail: %v", err)
 		return nil, err
@@ -27,7 +31,7 @@ func New(info model.RuntimeInfo) (*FuncManager, error) {
 	mgr.getter = *getter
 
 	// use the getter in manager, so getter can be updated
-	p, err := NewLruPool(getter)
+	p, err := NewLruPool(getter, cfg)
 	if err != nil {
 		log.Printf("init function manager fail: %v", err)
 		return nil, err
@@ -37,7 +41,7 @@ func New(info model.RuntimeInfo) (*FuncManager, error) {
 	return &mgr, nil
 }
 
-func (f *FuncManager) Init(instance FunctionInstance) error {
+func (f *FuncManager) Init(instance env.FunctionInstance) error {
 	runnableFuncInstance, err := f.funcPool.getFunc(&instance)
 	if err != nil {
 		log.Printf("can't get FunctionInstance, %v", instance)
@@ -52,14 +56,14 @@ func (f *FuncManager) Init(instance FunctionInstance) error {
 	return nil
 }
 
-func (f *FuncManager) Start(instance FunctionInstance) error {
+func (f *FuncManager) Start(instance env.FunctionInstance) error {
 	runnableFuncInstance, err := f.funcPool.getFunc(&instance)
 	if err != nil {
 		log.Printf("can't get FunctionInstance, %v", instance)
 		return err
 	}
 
-	err = runnableFuncInstance.run()
+	err = runnableFuncInstance.Run()
 	if err != nil {
 		log.Printf("run FunctionInstance fail, %v", instance)
 		return err
@@ -67,7 +71,7 @@ func (f *FuncManager) Start(instance FunctionInstance) error {
 	return nil
 }
 
-func (f *FuncManager) Kill(instance FunctionInstance) error {
+func (f *FuncManager) Kill(instance env.FunctionInstance) error {
 	runnableFuncInstance, err := f.funcPool.getFunc(&instance)
 	if err != nil {
 		return err

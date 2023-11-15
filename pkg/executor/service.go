@@ -2,7 +2,8 @@ package executor
 
 import (
 	"Color-FaaS-Core/pkg/configs"
-	fmgr "Color-FaaS-Core/pkg/executor/funcmanager"
+	"Color-FaaS-Core/pkg/executor/env"
+	fmgr "Color-FaaS-Core/pkg/executor/manager"
 	model "Color-FaaS-Core/pkg/model"
 	pb "Color-FaaS-Core/pkg/proto/executor"
 	"context"
@@ -28,7 +29,7 @@ func New(info model.RuntimeInfo) (*Executor, error) {
 	executor.cfg = configs.NewConfig(info)
 	executor.executorID = uuid.New().String()
 
-	mgr, err := fmgr.New(info)
+	mgr, err := fmgr.New(info, &executor.cfg)
 	if err != nil {
 		log.Fatalf("Init executor err %v", err)
 		return nil, err
@@ -77,7 +78,7 @@ func (e *Executor) InitTask(ctx context.Context, req *pb.TaskInstance) (*pb.Init
 
 	reply := pb.InitTaskReply{}
 
-	funcInstance := fmgr.FunctionInstance{}
+	funcInstance := env.FunctionInstance{}
 	funcInstance.Init(req, e.cfg)
 
 	err := e.funcManager.Init(funcInstance)
@@ -96,7 +97,7 @@ func (e *Executor) InitTask(ctx context.Context, req *pb.TaskInstance) (*pb.Init
 func (e *Executor) RunTask(ctx context.Context, req *pb.TaskInstance) (*pb.RunTaskReply, error) {
 	reply := pb.RunTaskReply{}
 
-	funcInstance := fmgr.FunctionInstance{}
+	funcInstance := env.FunctionInstance{}
 	funcInstance.Init(req, e.cfg)
 
 	err := e.funcManager.Start(funcInstance)
@@ -115,7 +116,7 @@ func (e *Executor) RunTask(ctx context.Context, req *pb.TaskInstance) (*pb.RunTa
 func (e *Executor) KillTask(ctx context.Context, req *pb.TaskInstance) (*pb.KillTaskReply, error) {
 	reply := pb.KillTaskReply{}
 
-	instance := fmgr.FunctionInstance{}
+	instance := env.FunctionInstance{}
 	instance.Init(req, e.cfg)
 
 	err := e.funcManager.Kill(instance)

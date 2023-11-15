@@ -8,13 +8,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const cfgPathDebug = "../../conf/executor_conf.yaml"
+const cfgPathDebug = "../../../conf/executor_conf.yaml"
 const cfgPathDev = "../conf/executor_conf.yaml"
 
 type EConfig struct {
-	Port         string `yaml:"Port"`
-	FuncFilePath string `yaml:"FuncFilePath"`
-	FuncRunDir   string `yaml:"FuncRunDir"`
+	Port            string `yaml:"Port"`
+	FuncFilePath    string `yaml:"FuncFilePath"`
+	FuncRunDir      string `yaml:"FuncRunDir"`
+	MaxCacheFuncNum int    `yaml:"MaxCacheFuncNum"`
 }
 
 type ExecutorConfig struct {
@@ -23,9 +24,10 @@ type ExecutorConfig struct {
 
 var defaultExecutorConfig = ExecutorConfig{
 	Cfg: EConfig{
-		Port:         "50001",
-		FuncFilePath: "./funcs",
-		FuncRunDir:   "./run",
+		Port:            "50001",
+		FuncFilePath:    "./funcs",
+		FuncRunDir:      "./run",
+		MaxCacheFuncNum: 50,
 	},
 }
 

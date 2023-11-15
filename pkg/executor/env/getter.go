@@ -1,22 +1,26 @@
-package funcmanager
+package env
 
 import (
+	"Color-FaaS-Core/pkg/common"
 	"Color-FaaS-Core/pkg/model"
 	"Color-FaaS-Core/pkg/utils"
 	"errors"
 	"log"
 )
-import "Color-FaaS-Core/pkg/common"
 
-type funcGetter struct {
+type Getter interface {
+	DownloadFile(instance FunctionInstance) error
+}
+
+type FuncGetter struct {
 	//hdfsCfg     hdfsCfg
 	hdfsManager utils.HdfsManager
 	//s3Cfg       s3Cfg
 	s3Manager utils.S3Manager
 }
 
-func newGetter(info model.RuntimeInfo) (*funcGetter, error) {
-	get := funcGetter{}
+func NewGetter(info model.RuntimeInfo) (*FuncGetter, error) {
+	get := FuncGetter{}
 	hdfsManager, err := utils.NewHdfsManager(info)
 	if err != nil {
 		return nil, err
@@ -28,7 +32,7 @@ func newGetter(info model.RuntimeInfo) (*funcGetter, error) {
 	return &get, nil
 }
 
-func (g *funcGetter) downloadFile(instance FunctionInstance) error {
+func (g *FuncGetter) DownloadFile(instance FunctionInstance) error {
 	if instance.StorageType == common.HDFS {
 		err := g.downloadHDFSFile(instance)
 		if err != nil {
@@ -44,7 +48,7 @@ func (g *funcGetter) downloadFile(instance FunctionInstance) error {
 	return nil
 }
 
-func (g *funcGetter) downloadHDFSFile(instance FunctionInstance) error {
+func (g *FuncGetter) downloadHDFSFile(instance FunctionInstance) error {
 	err := g.hdfsManager.DownloadFile(instance.RemotePath, instance.LocalPath)
 	if err != nil {
 		log.Printf("hdfs download fail: %v", err)
@@ -53,6 +57,6 @@ func (g *funcGetter) downloadHDFSFile(instance FunctionInstance) error {
 	return nil
 }
 
-func (g *funcGetter) downloadS3File(instance FunctionInstance) error {
+func (g *FuncGetter) downloadS3File(instance FunctionInstance) error {
 	return errors.New("s3 err")
 }

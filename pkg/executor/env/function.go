@@ -1,4 +1,4 @@
-package funcmanager
+package env
 
 import (
 	common "Color-FaaS-Core/pkg/common"
@@ -28,7 +28,7 @@ func (f *FunctionInstance) Init(req *pb.TaskInstance, cfg configs.ExecutorConfig
 	f.Status = common.NotInit
 }
 
-func (f *FunctionInstance) run() error {
+func (f *FunctionInstance) Run() error {
 	if f.Status != common.Init {
 		return errors.New("FunctionInstance not init, can't run")
 	}

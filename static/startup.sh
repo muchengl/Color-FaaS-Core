@@ -8,6 +8,7 @@ if [ $# -eq 0 ]; then
     echo '  [--help] help document'
     echo '  [--server] launch a server'
     echo '  [--executor] launch a executor'
+    echo '  [--client] launch a client'
     exit
 fi
 
@@ -21,6 +22,11 @@ fi
 if [ "$arg0" = "--server" ]; then
     cd server
     ./server
+fi
+
+if [ "$arg0" = "--client" ]; then
+    cd client
+    ./client
 fi
 
 if [ "$arg0" = "--help" ]; then

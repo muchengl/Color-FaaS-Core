@@ -1,14 +1,14 @@
 package main
 
 import (
-	"Color-FaaS-Core/pkg/executor"
+	client "Color-FaaS-Core/pkg/client"
 	"Color-FaaS-Core/pkg/model"
 	"log"
 	"os"
 )
 
 func main() {
-	exe, err := executor.New(model.DefaultInfo)
+	exe, err := client.NewClient(model.DefaultInfo)
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 		return
@@ -21,13 +21,6 @@ func main() {
 		return
 	}
 
-	err = exe.InitRunningEnv()
-	if err != nil {
-		log.Printf("Error: %v", err)
-		//log.Fatalf("Error: %v", err)
-		//return
-	}
-
-	log.Default().Printf("Start Executor RPC server...")
-	exe.Start()
+	log.Default().Printf("Start Client Http server...")
+	exe.Run()
 }

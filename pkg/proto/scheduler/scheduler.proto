@@ -5,16 +5,28 @@ package scheduler;
 
 // The greeting service definition.
 service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc RunTask (TaskInstance) returns (RunTaskReply) {}
 }
 
-// The request message containing the user's name.
-message HelloRequest {
-  string name = 1;
+message TaskInstance {
+  string taskID = 1;
+  string funcName = 2;
+  string funcID = 8;
+  string funcStorageType = 3; // s3
+  string taskFuncPath = 4;
+  string taskRunningMode = 5; //sync or async
+  string funcType = 11; // Go or python ......
+
+  int64 taskCPUCore = 6;
+  int64 taskMem = 7;
+  int64 taskDiskSpace = 9;
+  int64 taskMaxTime = 10;
+
+  string taskInput = 12;
 }
 
-// The response message containing the greetings
-message HelloReply {
-  string message = 1;
+message RunTaskReply {
+  int64 status = 1;
+  string msg = 2;
+  string logs =3;
 }

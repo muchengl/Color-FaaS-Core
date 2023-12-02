@@ -15,5 +15,8 @@ cp static/startup.sh output/
 echo "  ---> make server <---"
 go build -o output/server/server cmd/server/main.go
 
+echo "  ---> make client <---"
+go build -o output/client/client cmd/client/main.go
+
 echo "  ---> make executor <---"
 go build -o output/executor/executor cmd/executor/main.go

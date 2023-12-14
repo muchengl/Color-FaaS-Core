@@ -26,8 +26,8 @@ func NewZKService(cfg config.ClientConfig) (*ZKService, error) {
 }
 
 func (z *ZKService) RegisterService(path string, data []byte) error {
-	flags := int32(zk.FlagEphemeral) // 使用临时节点
-	acl := zk.WorldACL(zk.PermAll)   // 设置权限
+	flags := int32(zk.FlagEphemeral)
+	acl := zk.WorldACL(zk.PermAll)
 
 	_, err := z.conn.Create(path, data, flags, acl)
 	if err != nil {
